@@ -1,0 +1,11 @@
+# la liste des librairies à installer
+fastapi # le framework principal de ton API → gère les routes, validation, docs Swagger…
+uvicorn[standard] # le serveur ASGI qui lance ton app, AGSI = agile Server Gateway Interface
+python-jose[cryptography] # sert à gérer les JWT (tokens d’auth)
+pydantic # valide et structure tes données (entrées/sorties) 
+passlib[bcrypt] # pour hasher les mots de passe (bcrypt est un algorithme de hashage sécurisé)
+python-multipart # pour gérer les formulaires de login (multipart/form-data)
+passlib[bcrypt]
+python-multipart
+sqlalchemy.orm
+
