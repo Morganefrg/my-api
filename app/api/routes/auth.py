@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-
 from app.core.password import verify_password, hash_password
 from app.core.security import create_access_token
 from app.core.database import SessionLocal
 from app.models.schemas import Token, UserCreate, UserResponse
 from app.models.models import Utilisateur
+from ldap_auth import authenticate_ldap
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -21,12 +21,26 @@ def get_db():
 
 
 def authenticate_user(db: Session, username: str, password: str):
-    # Cherche l'utilisateur en BDD par email
+    # 1) Vérifier via LDAP
+    ldap_ok = authenticate_ldap(username, password)
+    if not ldap_ok:
+        return None
+    
+    # 2) Cherche l'utilisateur en BDD par email
     user = db.query(Utilisateur).filter(Utilisateur.email == username).first()
     if not user:
-        return None
-    if not verify_password(password, user.hashed_password):
-        return None
+        # Si l'utilisateur n'existe pas en BDD on le crée automatiquement
+        hashed = hash_password(password)
+        user = Utilisateur(
+            nom="",
+            prenom="",
+            email=username,
+            hashed_password=hashed,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    
     return user
 
 

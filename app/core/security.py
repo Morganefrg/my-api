@@ -1,9 +1,12 @@
 import os # pour accéder aux variables d'environnement, qui est un endroit plus sûr pour stocker des secrets que de les mettre en dur dans le code
-from datetime import datetime, timedelta, timezone # datetime pour gérer les dates et heures, timedelta pour faire des calculs de temps (comme ajouter des minutes), timezone pour s'assurer que les dates sont en UTC
+from datetime import datetime, timedelta, timezone #  # ← ajouter # datetime pour gérer les dates et heures, timedelta pour faire des calculs de temps (comme ajouter des minutes), timezone pour s'assurer que les dates sont en UTC
+from dotenv import load_dotenv 
 from jose import jwt # jose est une bibliothèque qui permet de créer et vérifier des JWT (JSON Web Tokens), qui sont des tokens d'authentification couramment utilisés dans les API.
 # jose permet de créer des tokens sécurisés en les signant avec une clé secrète, et de vérifier ces tokens pour s'assurer qu'ils sont valides et n'ont pas été altérés.
 
-SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_ME_IN_ENV") # la clé secrète utilisée pour signer les tokens JWT. Il est crucial de ne pas la laisser en dur dans le code, mais de la stocker dans une variable d'environnement pour des raisons de sécurité. Si la variable d'environnement n'est pas définie, elle prendra la valeur "CHANGE_ME_IN_ENV", ce qui est un rappel pour changer cette valeur avant de déployer l'application en production.
+load_dotenv(".secrets/.env")
+
+SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_ME_IN_ENV") # sert à signer les JWT, ne pas oublier de le changer pour une valeur plus sécurisée et de ne pas le commiter dans le code !
 ALGORITHM = "HS256" # l'algorithme de signature utilisé pour les JWT. HS256 signifie HMAC avec SHA-256, qui est un algorithme de signature symétrique. Cela signifie que la même clé secrète est utilisée à la fois pour signer et vérifier les tokens. C'est un choix courant pour les API simples, mais pour des applications plus complexes ou nécessitant une sécurité renforcée, on pourrait envisager d'utiliser un algorithme asymétrique comme RS256.
 EXPIRE_MINUTES = 20 # la durée de validité des tokens JWT en minutes. Après cette période, les tokens expireront et ne seront plus valides, ce qui oblige les utilisateurs à se réauthentifier pour obtenir un nouveau token. 
 
